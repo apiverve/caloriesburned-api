@@ -1,0 +1,212 @@
+openapi: 3.0.4
+info:
+  title: Calories Burned
+  description: >-
+    Calories Burned estimates the energy any of 1,100+ activities uses, from
+    running and cycling to gardening and office work. Search by name or
+    Compendium code, pass body weight in kg or lb and a duration, and get
+    calories per hour and in total with the MET value, its Compendium code and
+    the intensity class. Personalise with age, sex and height or a measured RMR,
+    or ask how long it takes to burn a calorie target.
+  termsOfService: https://apiverve.com/terms/
+  contact:
+    name: APIVerve Support
+    email: hello@apiverve.com
+    url: https://apiverve.com/contact
+  version: 1.0.0
+externalDocs:
+  description: Learn more about APIVerve
+  url: https://docs.apiverve.com?utm_source=openapi
+servers:
+  - url: https://api.apiverve.com/
+paths:
+  /v1/caloriesburned:
+    get:
+      summary: Calories Burned
+      description: >-
+        Search activities and estimate calories burned for a body weight and
+        duration, optionally personalised or reversed into minutes to burn a
+        calorie target.
+      operationId: caloriesburned
+      parameters:
+        - name: activity
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            Activity to search for, e.g. running, biking, yoga or mowing lawn.
+            Required unless code is given.
+          example: running
+        - name: code
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Five-digit Compendium activity code to look up directly, e.g. 12150.
+          example: '12150'
+        - name: weight
+          in: query
+          schema:
+            type: number
+          required: false
+          description: Body weight in kg (metric) or lb (imperial). Defaults to 70 kg.
+          example: 70
+        - name: unit
+          in: query
+          schema:
+            type: string
+          required: false
+          description: >-
+            Unit system for weight and height: metric (kg, cm) or imperial (lb,
+            in). Defaults to metric.
+          example: metric
+        - name: duration
+          in: query
+          schema:
+            type: number
+          required: false
+          description: Duration of the activity in minutes (1-1440). Defaults to 60.
+          example: 30
+        - name: calories
+          in: query
+          schema:
+            type: number
+          required: false
+          description: >-
+            Calorie target: adds minutesToBurn, the minutes each activity takes
+            to burn this many kcal.
+          example: 300
+        - name: age
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: >-
+            Age in years (18-120), for a personalised estimate with sex and
+            height.
+          example: 35
+        - name: sex
+          in: query
+          schema:
+            type: string
+          required: false
+          description: Sex for the resting metabolic rate estimate, with age and height.
+          example: female
+        - name: height
+          in: query
+          schema:
+            type: number
+          required: false
+          description: Height in cm (metric) or inches (imperial), with age and sex.
+          example: 170
+        - name: rmr
+          in: query
+          schema:
+            type: number
+          required: false
+          description: >-
+            Measured resting metabolic rate in kcal per day (500-5000).
+            Overrides age, sex and height.
+          example: 1500
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          required: false
+          description: Number of matching activities to return (1-25). Defaults to 5.
+          example: 10
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: status
+                  error:
+                    type: string
+                    description: error
+                  data:
+                    type: object
+                    description: data
+              example:
+                status: ok
+                error: null
+                data:
+                  query: running
+                  count: 5
+                  totalMatches: 73
+                  weightKg: 70
+                  durationMinutes: 30
+                  targetCalories: null
+                  personalized: false
+                  rmrKcalPerDay: null
+                  activities:
+                    - code: '12145'
+                      activity: Running, self-selected pace
+                      heading: Running
+                      met: 10.5
+                      correctedMet: null
+                      intensity: vigorous
+                      caloriesPerHour: 772
+                      durationMinutes: 30
+                      totalCalories: 386
+                      minutesToBurn: null
+                    - code: '12140'
+                      activity: Running, cross country
+                      heading: Running
+                      met: 9.3
+                      correctedMet: null
+                      intensity: vigorous
+                      caloriesPerHour: 684
+                      durationMinutes: 30
+                      totalCalories: 342
+                      minutesToBurn: null
+                    - code: '12170'
+                      activity: Running, stairs, up
+                      heading: Running
+                      met: 15
+                      correctedMet: null
+                      intensity: vigorous
+                      caloriesPerHour: 1103
+                      durationMinutes: 30
+                      totalCalories: 551
+                      minutesToBurn: null
+                    - code: '12150'
+                      activity: Running (Taylor Code 200)
+                      heading: Running
+                      met: 8
+                      correctedMet: null
+                      intensity: vigorous
+                      caloriesPerHour: 588
+                      durationMinutes: 30
+                      totalCalories: 294
+                      minutesToBurn: null
+                    - code: '12180'
+                      activity: Running, on a track, team practice
+                      heading: Running
+                      met: 10
+                      correctedMet: null
+                      intensity: vigorous
+                      caloriesPerHour: 735
+                      durationMinutes: 30
+                      totalCalories: 368
+                      minutesToBurn: null
+        '401':
+          description: Your request was not authorized, or your API Key was invalid
+        '404':
+          description: Requested resource was not found
+        '500':
+          description: A server error has occurred, try again later
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: x-api-key
+      in: header
+security:
+  - api_key: []
